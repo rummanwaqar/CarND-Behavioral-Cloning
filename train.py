@@ -1,5 +1,6 @@
 import warnings
 warnings.filterwarnings("ignore")
+import time
 
 from dataset_utils import get_samples, generator
 
@@ -8,9 +9,9 @@ from keras.layers import Lambda, Cropping2D
 from keras.layers.core import Dense, Activation, Flatten, Dropout
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
+from keras.callbacks import TensorBoard
 
-import warnings
-warnings.filterwarnings("ignore")
+NAME = 'cnn-5x3-{}'.format(int(time.time()))
 
 def get_model():
     model = Sequential()
@@ -29,7 +30,7 @@ def get_model():
     model.add(Conv2D(64, kernel_size=3, strides=(1, 1), padding='valid', activation='relu'))
     # fc layers
     model.add(Flatten())
-    model.add(Dense(200, activation='relu'))
+    model.add(Dense(100, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(50, activation='relu'))
     model.add(Dropout(0.5))
@@ -42,9 +43,12 @@ def get_model():
 
 
 def train():
+    # setup tensorboard
+    tensorboard = TensorBoard(log_dir='.logs/{}'.format(NAME))
     # read data
     datasets = ['data_1', 'data_2', 'data_3', 'data_4']
     BATCH_SIZE = 128
+    EPOCHS = 8
     training_samples, validation_samples = get_samples(datasets=datasets,
                                                        split=0.2,
                                                        base_url='data',
@@ -55,7 +59,7 @@ def train():
     model = get_model()
     model.fit_generator(training_generator, steps_per_epoch=len(training_samples)/BATCH_SIZE,
                         validation_data=validation_generator, validation_steps=len(validation_samples)/BATCH_SIZE,
-                        nb_epoch=10)
+                        nb_epoch=EPOCHS, callbacks=[tensorboard])
     model.save('model.h5')
 
 if __name__ == '__main__':
