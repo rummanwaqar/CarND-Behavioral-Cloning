@@ -107,8 +107,37 @@ def preprocess_image(img, width=64, height=64, crop=(65,20)):
     img = cv2.resize(img, (width, height))
     return img
 
+def flip_image(image, angle, prob=0.3):
+    '''
+    flips the image and steering angle left to right
+    '''
+    if np.random.rand() < prob:
+        image = cv2.flip(image, 1)
+        angle = -angle
+    return image, angle
 
-def generator(samples, batch_size=32):
+def translate_image(image, angle, x_range, angle_factor=0.0025):
+    '''
+    translates the image within x_range
+    modifies angle using angle_factor
+    '''
+    translation = x_range*(np.random.rand()-0.5)
+    M = np.float32([[1,0,translation], [0,1,0]])
+    angle += translation * angle_factor
+    image = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]))
+    return image, angle
+
+def augment(img, angle):
+    '''
+    augment the image
+    * flip
+    * x-translate
+    '''
+    image, angle = flip_image(img, angle, prob=0.3)
+    image, angle = translate_image(img, angle, x_range=100)
+    return image, angle
+
+def generator(samples, batch_size=32, is_training=True, augment_prob=0.5):
     '''
     generator for dataset
     '''
@@ -124,8 +153,11 @@ def generator(samples, batch_size=32):
                 format: image, angle
                 '''
                 image = mpimg.imread(batch_sample[0])
+                angle = float(batch_sample[1])
+                if is_training and np.random.rand() > augment_prob:
+                    image, angle = augment(image, angle)
                 images.append(preprocess_image(image))
-                angles.append(batch_sample[1])
+                angles.append(angle)
             X_train = np.array(images)
             y_train = np.array(angles)
             yield sklearn.utils.shuffle(X_train, y_train)

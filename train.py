@@ -13,7 +13,7 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import TensorBoard
 
-NAME = 'cnn-5x3-resize64x64-fc200-{}'.format(int(time.time()))
+NAME = 'cnn-5x3-augment-{}'.format(int(time.time()))
 
 def get_model():
     model = Sequential()
@@ -51,14 +51,14 @@ def train():
                                  verbose=0, save_best_only=True, mode='auto')
     # read data
     datasets = get_dataset_names()
-    BATCH_SIZE = 64 
+    BATCH_SIZE = 64
     EPOCHS = 15
     training_samples, validation_samples = get_samples(datasets=datasets,
                                                        split=0.2,
                                                        base_url='data',
                                                        all=True)
-    training_generator = generator(training_samples, batch_size=BATCH_SIZE)
-    validation_generator = generator(validation_samples, batch_size=BATCH_SIZE)
+    training_generator = generator(training_samples, batch_size=BATCH_SIZE, is_training=True)
+    validation_generator = generator(validation_samples, batch_size=BATCH_SIZE, is_training=False)
 
     model = get_model()
     model.fit_generator(training_generator, steps_per_epoch=len(training_samples)/BATCH_SIZE,
