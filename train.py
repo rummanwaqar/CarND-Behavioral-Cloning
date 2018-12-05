@@ -19,7 +19,7 @@ def get_model():
     model = Sequential()
     # normalize from -1 to 1
     model.add(Lambda(lambda x: (x / 127.5) - 1.0, input_shape=(160,320,3)))
-    model.add(Cropping2D(cropping=((70, 25), (0, 0))))
+    model.add(Cropping2D(cropping=((70, 24), (0, 0))))
     # convolutional layers
     model.add(Conv2D(24, kernel_size=5, strides=(2, 2), padding='valid', activation='relu'))
     model.add(Dropout(0.5))
@@ -48,7 +48,7 @@ def train():
     # setup tensorboard
     tensorboard = TensorBoard(log_dir='.logs/{}'.format(NAME))
     # model checkpoints
-    checkpoint = ModelCheckpoint('model-{epoch:02d}.h5', monitor='val_loss', 
+    checkpoint = ModelCheckpoint('model-{epoch:02d}.h5', monitor='val_loss',
                                  verbose=0, save_best_only=True, mode='auto')
     # read data
     datasets = get_dataset_names()

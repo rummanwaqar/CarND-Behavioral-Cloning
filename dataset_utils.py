@@ -95,6 +95,16 @@ def balance_samples(samples, bins, bin_width=0.03, max=2000):
             balanced.append(sample)
     return balanced
 
+def preprocess_image(img, width=200, height=66):
+    '''
+    preprocesses image
+    RGB -> YUV
+    Rescale to 66, 200
+    '''
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
+    img = cv2.resize(img, (width, height))
+    return img
+
 
 def generator(samples, batch_size=32):
     '''
@@ -111,7 +121,8 @@ def generator(samples, batch_size=32):
                 '''
                 format: image, angle
                 '''
-                images.append(cv2.cvtColor(mpimg.imread(batch_sample[0]), cv2.COLOR_RGB2YUV))
+                image = mpimg.imread(batch_sample[0])
+                images.append(preprocess_image(image))
                 angles.append(batch_sample[1])
             X_train = np.array(images)
             y_train = np.array(angles)
@@ -124,7 +135,7 @@ def distribution(balanced=True):
     fig = plt.figure()
     samples, _ = get_samples(datasets=get_dataset_names(),
                                split=0.0,
-                               base_url='data', 
+                               base_url='data',
                                balanced=balanced)
     angles = np.array([float(x[1]) for x in samples])
     plt.hist(angles, 50, rwidth=0.5)
