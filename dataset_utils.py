@@ -7,6 +7,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import cv2
 
 CSV_FILE_NAME = 'driving_log.csv'
 
@@ -110,7 +111,7 @@ def generator(samples, batch_size=32):
                 '''
                 format: image, angle
                 '''
-                images.append(mpimg.imread(batch_sample[0]))
+                images.append(cv2.cvtColor(mpimg.imread(batch_sample[0]), cv2.COLOR_RGB2YUV))
                 angles.append(batch_sample[1])
             X_train = np.array(images)
             y_train = np.array(angles)

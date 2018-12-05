@@ -13,7 +13,7 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import TensorBoard
 
-NAME = 'cnn-5x3-lr-1e-4{}'.format(int(time.time()))
+NAME = 'cnn-5x3-yuv-{}'.format(int(time.time()))
 
 def get_model():
     model = Sequential()
@@ -53,7 +53,7 @@ def train():
     # read data
     datasets = get_dataset_names()
     BATCH_SIZE = 128
-    EPOCHS = 8
+    EPOCHS = 10
     training_samples, validation_samples = get_samples(datasets=datasets,
                                                        split=0.2,
                                                        base_url='data',
