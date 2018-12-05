@@ -43,7 +43,7 @@ def get_model():
 
 def train():
     # read data
-    datasets = ['data_1', 'data_2', 'data_3']
+    datasets = ['data_1', 'data_2', 'data_3', 'data_4']
     BATCH_SIZE = 128
     training_samples, validation_samples = get_samples(datasets=datasets,
                                                        split=0.2,
