@@ -70,8 +70,18 @@ def get_samples(datasets, split=0.2, base_url='data', all=True, correction=0.25)
                     samples.append([line[1], angle+correction])
                     samples.append([line[2], angle-correction])
         print('Read {} samples from {}'.format(count, url))
+    # balance_samples(samples, [0, correction, -correction])
     train_samples, validation_samples = train_test_split(samples, test_size=split)
     return train_samples, validation_samples
+
+def balance_samples(samples, bins, bin_width=0.03):
+    sklearn.utils.shuffle(samples)
+    for sample in samples:
+        for bin in bins:
+            pass
+        # if abs()
+        print(bin)
+
 
 def generator(samples, batch_size=32):
     '''
@@ -79,7 +89,7 @@ def generator(samples, batch_size=32):
     '''
     num_samples = len(samples)
     while 1:
-        sklearn.utils.shuffle(samples)
+        samples = sklearn.utils.shuffle(samples)
         for offset in range(0, num_samples, batch_size):
             images = []
             angles = []
