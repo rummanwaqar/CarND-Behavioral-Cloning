@@ -95,7 +95,7 @@ def balance_samples(samples, bins, bin_width=0.03, max=2000):
             balanced.append(sample)
     return balanced
 
-def preprocess_image(img, width=200, height=66, crop=(65,20)):
+def preprocess_image(img, width=64, height=64, crop=(65,20)):
     '''
     preprocesses image
     RGB -> YUV
