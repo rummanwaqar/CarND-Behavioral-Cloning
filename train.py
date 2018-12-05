@@ -18,8 +18,7 @@ NAME = 'cnn-5x3-yuv-{}'.format(int(time.time()))
 def get_model():
     model = Sequential()
     # normalize from -1 to 1
-    model.add(Lambda(lambda x: (x / 127.5) - 1.0, input_shape=(160,320,3)))
-    model.add(Cropping2D(cropping=((70, 24), (0, 0))))
+    model.add(Lambda(lambda x: (x / 127.5) - 1.0, input_shape=(66,200,3)))
     # convolutional layers
     model.add(Conv2D(24, kernel_size=5, strides=(2, 2), padding='valid', activation='relu'))
     model.add(Dropout(0.5))
