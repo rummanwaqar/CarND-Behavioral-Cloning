@@ -32,14 +32,17 @@ def fix_csv_paths(csv_file):
     Converts urls from abs to relative format (data/dataset/IMG/*.jpg)
     '''
     new_rows = []
+    base_url = csv_file.split(os.sep)[:2]
     with open(csv_file, 'r') as f:
         reader = csv.reader(f)
         for row in reader:
             new_row = row
             for i in range(3):
-                dirs = os.path.normpath(new_row[i]).split(os.sep)
+                dirs = os.path.normpath(new_row[i]).strip().split(os.sep)
                 if len(dirs) > 4:
                     new_row[i] = os.path.join(*dirs[-4:])
+                elif len(dirs) < 3:
+                    new_row[i] = os.path.join(*base_url, *dirs)
             new_rows.append(new_row)
 
     with open(csv_file, 'w') as f:
