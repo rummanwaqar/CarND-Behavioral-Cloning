@@ -51,8 +51,8 @@ def train():
                                  verbose=0, save_best_only=True, mode='auto')
     # read data
     datasets = get_dataset_names()
-    BATCH_SIZE = 128
-    EPOCHS = 10
+    BATCH_SIZE = 64 
+    EPOCHS = 15
     training_samples, validation_samples = get_samples(datasets=datasets,
                                                        split=0.2,
                                                        base_url='data',
