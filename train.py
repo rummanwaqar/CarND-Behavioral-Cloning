@@ -9,9 +9,11 @@ from keras.layers import Lambda, Cropping2D
 from keras.layers.core import Dense, Activation, Flatten, Dropout
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
+from keras.optimizers import Adam
+from keras.callbacks import ModelCheckpoint
 from keras.callbacks import TensorBoard
 
-NAME = 'cnn-5x3-corr-inc{}'.format(int(time.time()))
+NAME = 'cnn-5x3-lr-1e-4{}'.format(int(time.time()))
 
 def get_model():
     model = Sequential()
@@ -37,7 +39,7 @@ def get_model():
     model.add(Dense(10, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(1))
-    model.compile(loss='mse', optimizer='adam')
+    model.compile(loss='mse', optimizer=Adam(lr=1e-4))
     print(model.summary())
     return model
 
@@ -45,6 +47,9 @@ def get_model():
 def train():
     # setup tensorboard
     tensorboard = TensorBoard(log_dir='.logs/{}'.format(NAME))
+    # model checkpoints
+    checkpoint = ModelCheckpoint('model-{epoch:02d}.h5', monitor='val_loss', 
+                                 verbose=0, save_best_only=True, mode='auto')
     # read data
     datasets = get_dataset_names()
     BATCH_SIZE = 128
@@ -59,7 +64,7 @@ def train():
     model = get_model()
     model.fit_generator(training_generator, steps_per_epoch=len(training_samples)/BATCH_SIZE,
                         validation_data=validation_generator, validation_steps=len(validation_samples)/BATCH_SIZE,
-                        nb_epoch=EPOCHS, callbacks=[tensorboard])
+                        nb_epoch=EPOCHS, callbacks=[tensorboard, checkpoint])
     model.save('model.h5')
 
 if __name__ == '__main__':
