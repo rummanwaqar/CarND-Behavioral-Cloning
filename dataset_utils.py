@@ -63,7 +63,7 @@ def get_samples(datasets, split=0.2, base_url='data'):
     train_samples, validation_samples = train_test_split(samples, test_size=split)
     return train_samples, validation_samples
 
-def generator(samples, batch_size=32):
+def generator(samples, batch_size=32, correction=0.25):
     '''
     generator for dataset
     '''
@@ -81,14 +81,26 @@ def generator(samples, batch_size=32):
                 format: center image, left image, right image, angle, throttle, break, speed
                 '''
                 center_image = mpimg.imread(batch_sample[0])
+                left_image = mpimg.imread(batch_sample[1])
+                right_image = mpimg.imread(batch_sample[2])
                 angle = float(batch_sample[3])
-                images.append(center_image)
-                angles.append(angle)
+                images.extend([center_image, left_image, right_image])
+                angles.extend([angle, angle+correction, angle-correction])
 
             X_train = np.array(images)
             y_train = np.array(angles)
             yield sklearn.utils.shuffle(X_train, y_train)
 
+def distribution():
+    fig = plt.figure()
+    samples, _ = get_samples(datasets=get_dataset_names(),
+                                                       split=0.0,
+                                                       base_url='data')
+    angles = np.array([float(x[3]) for x in samples])
+    plt.hist(angles, 50, rwidth=0.5)
+    plt.title('Dataset Distribution')
+    plt.xlabel('Driving angle')
+    plt.show()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Dataset processor')
@@ -121,4 +133,5 @@ if __name__ == '__main__':
             plt.imshow(X[i])
         plt.show()
     else:
+        # distribution()
         print("I did nothing")
