@@ -46,24 +46,31 @@ def fix_csv_paths(csv_file):
         writer = csv.writer(f)
         writer.writerows(new_rows)
 
-def get_samples(datasets, split=0.2, base_url='data'):
+def get_samples(datasets, split=0.2, base_url='data', all=True, correction=0.25):
     '''
     returns training and validation samples
+    csv format: center image, left image, right image, angle, throttle, break, speed
+    output sample format: image url, angle
     '''
     samples = []
-    prev_count = 0
     for dataset in datasets:
+        count = 0
         url = get_csv(dataset, base_url=base_url)
         with open(url) as csvfile:
             reader = csv.reader(csvfile)
             for line in reader:
-                samples.append(line)
-        print('Read {} samples from {}'.format(len(samples)-prev_count, url))
-        prev_count = len(samples)
+                angle = float(line[3])
+                count += 1
+                samples.append([line[0], angle])
+                if all:
+                    count += 2
+                    samples.append([line[1], angle+correction])
+                    samples.append([line[2], angle-correction])
+        print('Read {} samples from {}'.format(count, url))
     train_samples, validation_samples = train_test_split(samples, test_size=split)
     return train_samples, validation_samples
 
-def generator(samples, batch_size=32, correction=0.25):
+def generator(samples, batch_size=32):
     '''
     generator for dataset
     '''
@@ -71,32 +78,28 @@ def generator(samples, batch_size=32, correction=0.25):
     while 1:
         sklearn.utils.shuffle(samples)
         for offset in range(0, num_samples, batch_size):
-            batch_samples = samples[offset:offset+batch_size]
-
             images = []
             angles = []
-
+            batch_samples = samples[offset:offset+batch_size]
             for batch_sample in batch_samples:
                 '''
-                format: center image, left image, right image, angle, throttle, break, speed
+                format: image, angle
                 '''
-                center_image = mpimg.imread(batch_sample[0])
-                left_image = mpimg.imread(batch_sample[1])
-                right_image = mpimg.imread(batch_sample[2])
-                angle = float(batch_sample[3])
-                images.extend([center_image, left_image, right_image])
-                angles.extend([angle, angle+correction, angle-correction])
-
+                images.append(mpimg.imread(batch_sample[0]))
+                angles.append(batch_sample[1])
             X_train = np.array(images)
             y_train = np.array(angles)
             yield sklearn.utils.shuffle(X_train, y_train)
 
 def distribution():
+    '''
+    displays image distribution
+    '''
     fig = plt.figure()
     samples, _ = get_samples(datasets=get_dataset_names(),
-                                                       split=0.0,
-                                                       base_url='data')
-    angles = np.array([float(x[3]) for x in samples])
+                               split=0.0,
+                               base_url='data')
+    angles = np.array([float(x[1]) for x in samples])
     plt.hist(angles, 50, rwidth=0.5)
     plt.title('Dataset Distribution')
     plt.xlabel('Driving angle')
@@ -107,6 +110,8 @@ if __name__ == '__main__':
     parser.add_argument("--fix_paths", help="converts abs to relative paths",
                         action="store_true")
     parser.add_argument("--display", help="displays images",
+                        action="store_true")
+    parser.add_argument("--dist", help="shows dataset distribution",
                         action="store_true")
     args = parser.parse_args()
 
@@ -132,6 +137,7 @@ if __name__ == '__main__':
             plt.title("{}: {:.3f}".format(i+1, y[i]))
             plt.imshow(X[i])
         plt.show()
+    elif args.dist:
+        distribution()
     else:
-        # distribution()
         print("I did nothing")

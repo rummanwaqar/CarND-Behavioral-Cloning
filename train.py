@@ -44,10 +44,11 @@ def get_model():
 def train():
     # read data
     datasets = ['data_1', 'data_2', 'data_3']
-    BATCH_SIZE = 64
+    BATCH_SIZE = 128
     training_samples, validation_samples = get_samples(datasets=datasets,
                                                        split=0.2,
-                                                       base_url='data')
+                                                       base_url='data',
+                                                       all=True)
     training_generator = generator(training_samples, batch_size=BATCH_SIZE)
     validation_generator = generator(validation_samples, batch_size=BATCH_SIZE)
 
