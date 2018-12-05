@@ -1,6 +1,7 @@
 from dataset_utils import get_samples, generator
 
 from keras.models import Sequential
+from keras.layers import Lambda, Cropping2D
 from keras.layers.core import Dense, Activation, Flatten, Dropout
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
@@ -10,7 +11,10 @@ warnings.filterwarnings("ignore")
 
 def get_model():
     model = Sequential()
-    model.add(Flatten(input_shape=(160,320,3)))
+    # normalize from -1 to 1
+    model.add(Lambda(lambda x: (x / 127.5) - 1.0, input_shape=(160,320,3)))
+    model.add(Cropping2D(cropping=((70, 25), (0, 0))))
+    model.add(Flatten())
     model.add(Dense(1))
     model.compile(loss='mse', optimizer='adam')
     print(model.summary())
