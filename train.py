@@ -2,7 +2,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import time
 
-from dataset_utils import get_samples, generator
+from dataset_utils import get_samples, generator, get_dataset_names
 
 from keras.models import Sequential
 from keras.layers import Lambda, Cropping2D
@@ -11,7 +11,7 @@ from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
 from keras.callbacks import TensorBoard
 
-NAME = 'cnn-5x3-{}'.format(int(time.time()))
+NAME = 'cnn-5x3-corr-inc{}'.format(int(time.time()))
 
 def get_model():
     model = Sequential()
@@ -46,7 +46,7 @@ def train():
     # setup tensorboard
     tensorboard = TensorBoard(log_dir='.logs/{}'.format(NAME))
     # read data
-    datasets = ['data_1', 'data_2', 'data_3', 'data_4']
+    datasets = get_dataset_names()
     BATCH_SIZE = 128
     EPOCHS = 8
     training_samples, validation_samples = get_samples(datasets=datasets,

@@ -116,14 +116,15 @@ def generator(samples, batch_size=32):
             y_train = np.array(angles)
             yield sklearn.utils.shuffle(X_train, y_train)
 
-def distribution():
+def distribution(balanced=True):
     '''
     displays image distribution
     '''
     fig = plt.figure()
     samples, _ = get_samples(datasets=get_dataset_names(),
                                split=0.0,
-                               base_url='data')
+                               base_url='data', 
+                               balanced=balanced)
     angles = np.array([float(x[1]) for x in samples])
     plt.hist(angles, 50, rwidth=0.5)
     plt.title('Dataset Distribution')
