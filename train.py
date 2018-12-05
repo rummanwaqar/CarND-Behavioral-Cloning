@@ -13,7 +13,7 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import TensorBoard
 
-NAME = 'cnn-5x3-dropout-{}'.format(int(time.time()))
+NAME = 'cnn-5x3-resize64x64-fc200-{}'.format(int(time.time()))
 
 def get_model():
     model = Sequential()
@@ -29,7 +29,6 @@ def get_model():
     model.add(Conv2D(64, kernel_size=3, strides=(1, 1), padding='valid', activation='relu'))
     model.add(Dropout(0.5))
     model.add(Conv2D(64, kernel_size=3, strides=(1, 1), padding='valid', activation='relu'))
-    model.add(Dropout(0.5))
     # fc layers
     model.add(Flatten())
     model.add(Dense(200, activation='relu'))
