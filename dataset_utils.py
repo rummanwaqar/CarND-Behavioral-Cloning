@@ -49,7 +49,7 @@ def fix_csv_paths(csv_file):
         writer = csv.writer(f)
         writer.writerows(new_rows)
 
-def get_samples(datasets, split=0.2, base_url='data', all=True, correction=0.25):
+def get_samples(datasets, split=0.2, base_url='data', all=True, correction=0.25, balanced=True):
     '''
     returns training and validation samples
     csv format: center image, left image, right image, angle, throttle, break, speed
@@ -70,17 +70,29 @@ def get_samples(datasets, split=0.2, base_url='data', all=True, correction=0.25)
                     samples.append([line[1], angle+correction])
                     samples.append([line[2], angle-correction])
         print('Read {} samples from {}'.format(count, url))
-    # balance_samples(samples, [0, correction, -correction])
+    if balanced:
+        samples = balance_samples(samples, [0, correction, -correction])
     train_samples, validation_samples = train_test_split(samples, test_size=split)
     return train_samples, validation_samples
 
-def balance_samples(samples, bins, bin_width=0.03):
-    sklearn.utils.shuffle(samples)
+def balance_samples(samples, bins, bin_width=0.03, max=2000):
+    '''
+    applies a max limit on samples within bin_width of bins
+    '''
+    samples = sklearn.utils.shuffle(samples)
+    balanced = []
+    bins = np.array(bins)
+    bin_counts = np.zeros_like(bins)
     for sample in samples:
-        for bin in bins:
-            pass
-        # if abs()
-        print(bin)
+        in_bin = np.absolute(bins - sample[1]) <= bin_width
+        if np.sum(in_bin) > 0:
+            idx = np.argmax(in_bin)
+            if bin_counts[idx] < max:
+                balanced.append(sample)
+                bin_counts[idx] += 1
+        else:
+            balanced.append(sample)
+    return balanced
 
 
 def generator(samples, batch_size=32):
