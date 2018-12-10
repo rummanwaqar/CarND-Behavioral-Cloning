@@ -32,8 +32,6 @@ python drive.py model.h5
 
 [model]: ./output_images/model.png "Model Visualization"
 [preprocessed]: ./output_images/preprocessing.png "Preprocessing"
-[unbalanced]: ./output_images/all_cam.png "Unbalanced dataset"
-[balanced]: ./output_images/balanced.png "Balanced dataset"
 [loss_graph]: ./output_images/loss_graph.png "Loss graph"
 [output]: ./output_images/output.gif "Output GIF"
 
@@ -58,7 +56,7 @@ The data preprocessing pipeline followed these steps:
 
 The three camera images (center, left and right) were merged into the dataset by adding a +/- 0.25 correction factor for the steering angle of the left and right images. As seen by the following histogram the distribution of the dataset is not very balanced. We have a lot of samples for -0.25, 0.0 and +0.25 degrees.
 
-![unbalanced]
+<img src="./output_images/all_cam.png" alt="Unbalanced dataset" width="400"/>
 
 We employed the following techniques to balance the dataset (code in dataset_utils.py):
 1. Collected more data focusing less frequent steering angles.
@@ -67,7 +65,8 @@ We employed the following techniques to balance the dataset (code in dataset_uti
 4. Randomly translated images along the x-axis within +/- 100 pixels. A factor of 0.0025 was applied to the steering angle to compensate for this translation.
 
 The following histogram shows the more balanced dataset:
-![balanced]
+
+<img src="./output_images/balanced.png" alt="Balanced dataset" width="400"/>
 
 ### Training
 
