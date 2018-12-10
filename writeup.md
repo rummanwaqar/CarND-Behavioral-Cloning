@@ -1,4 +1,4 @@
-# ** Self Driving Car Behavioral Cloning**
+# Self Driving Car Behavioral Cloning
 
 
 The goals of this project are the following:
