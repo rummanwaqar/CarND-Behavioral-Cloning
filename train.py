@@ -13,7 +13,7 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import TensorBoard
 
-NAME = 'cnn-5x3-relu-{}'.format(int(time.time()))
+NAME = 'cnn-5x3-{}'.format(int(time.time()))
 
 def get_model():
     model = Sequential()
@@ -21,13 +21,9 @@ def get_model():
     model.add(Lambda(lambda x: (x / 127.5) - 1.0, input_shape=(64,64,3)))
     # convolutional layers
     model.add(Conv2D(24, kernel_size=5, strides=(2, 2), padding='valid', activation='relu', kernel_initializer='truncated_normal'))
-    model.add(Dropout(0.5))
     model.add(Conv2D(36, kernel_size=5, strides=(2, 2), padding='valid', activation='relu', kernel_initializer='truncated_normal'))
-    model.add(Dropout(0.5))
     model.add(Conv2D(48, kernel_size=5, strides=(2, 2), padding='valid', activation='relu', kernel_initializer='truncated_normal'))
-    model.add(Dropout(0.5))
     model.add(Conv2D(64, kernel_size=3, strides=(1, 1), padding='valid', activation='relu', kernel_initializer='truncated_normal'))
-    model.add(Dropout(0.5))
     model.add(Conv2D(64, kernel_size=3, strides=(1, 1), padding='valid', activation='relu', kernel_initializer='truncated_normal'))
     # fc layers
     model.add(Flatten())
@@ -51,8 +47,8 @@ def train():
                                  verbose=0, save_best_only=True, mode='auto')
     # read data
     datasets = get_dataset_names()
-    BATCH_SIZE = 64
-    EPOCHS = 7
+    BATCH_SIZE = 128
+    EPOCHS = 20
     training_samples, validation_samples = get_samples(datasets=datasets,
                                                        split=0.2,
                                                        base_url='data',
